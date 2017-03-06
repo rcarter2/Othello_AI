@@ -42,15 +42,24 @@ Player::~Player() {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) 
 {
+	//Creates a timer, but not needed yet.
 	time_t now;
 	time(&now);
+	//Gets the opposite color
 	Side other = (this->color == BLACK) ? WHITE : BLACK;
+	//Does opponents move, i.e. syncs up internal and external boards
 	this->game_board.doMove(opponentsMove, other);
 	
+	//If no move available or game over, return nullptr.
 	if(!this->game_board.hasMoves(this->color) || this->game_board.isDone())
 	{
 		return nullptr;
 	}
+	
+	/**
+	 * Commented out the first 5 points, since unnecessary.
+	 */
+	
 	/*int x = 0, y = 0;
 	while("212121")
 	{
@@ -81,10 +90,17 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 	*/
 	vector<Move *> possibleMoves = getMoves(game_board);
 	Move * bestMove = getBestMove(possibleMoves, &this->game_board);
+	//Makes move on internal board instance.
 	this->game_board.doMove(bestMove, this->color);
 	return bestMove;
 }
 
+/**
+ * @brief Gets a list of all available moves for the given player.
+ * 
+ * @param Board board: current board instance.
+ * @returns vector<Move *>: vector of all the possible moves.
+ */
 vector<Move *> Player::getMoves(Board board)
 {
 	vector<Move *> moves = vector<Move *>();
@@ -102,6 +118,16 @@ vector<Move *> Player::getMoves(Board board)
 	return moves;
 }
 
+/**
+ * @brief Given a list of available moves and a board instance, find the
+ * best move according to the heuristic function and number of tiles 
+ * flipped.
+ * 
+ * @param vector<Move *> moves:  list of possible move pointers
+ * @param Board * board: pointer to the current board instance.
+ * 
+ * @returns Move *: a move pointer for the best move.
+ */
 Move *Player::getBestMove(vector<Move *> moves, Board * board)
 {
 	Move * bestMove = new Move(-1, -1);
@@ -113,7 +139,7 @@ Move *Player::getBestMove(vector<Move *> moves, Board * board)
 	vector<Move *>::iterator i;
 	for(i = moves.begin(); i != moves.end(); i++)
 	{
-		Board * board1 = board->copy();
+		Board * board1 = board->copy(); // board to simulate move
 		int taken = 0;
 		currentMove = *i;
 		int x = currentMove->getX(), y = currentMove->getY();
@@ -121,37 +147,45 @@ Move *Player::getBestMove(vector<Move *> moves, Board * board)
 		if((x == 0 && y == 0) || (x == 7 && y == 0) || (x == 0 && y == 7)
 			|| (x == 7 && y == 7))
 		{
+			// Corner spaces
 			score = CORNER;
 		}
 		else if((x == 1 && y == 1) || (x == 1 && y == 6) || (x == 6 && 
 				y == 1) || (x == 6 && y == 6))
 		{
+			//diagonal to corner spaces
 			score = ADJ;
 		}
 		else if(x == 0 || x == 7 || y == 0 || y == 7)
 		{
+			//edge spaces
 			score = EDGE;
 		}
 		else if(((x == 1 || x == 6) && y == 0) || ((x == 1 || x == 6) &&
 				y == 6) || ((y == 1 || y == 6) && x == 0) || ((y == 1
 				|| y == 6) && x == 6))
 		{
+			//edge spaces adjacent to corners
 			score = ADJCORNER;
 		}
 		else
 		{
+			//regular spaces
 			score = 0;
 		}
+		// make the move
 		board1->doMove(currentMove, this->color);
 		taken = board->count(other) - board1->count(other);
 		if(score > maxScore)
 		{
+			// if good move, update info
 			maxScore = score;
 			maxTaken = taken;
 			bestMove = currentMove;
 		}
 		else if (taken > maxTaken && score >= maxScore)
 		{
+			// if same score but takes more, update info
 			maxTaken = taken;
 			maxScore = score;
 			bestMove = currentMove;

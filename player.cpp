@@ -51,7 +51,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 	{
 		return nullptr;
 	}
-	int x = 0, y = 0;
+	/*int x = 0, y = 0;
 	while("212121")
 	{
 		std::cerr << x << ", " << y << std::endl;
@@ -78,6 +78,84 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 			break;
 		}
 	}
-	return nullptr;
+	*/
+	vector<Move *> possibleMoves = getMoves(game_board);
+	Move * bestMove = getBestMove(possibleMoves, &this->game_board);
+	this->game_board.doMove(bestMove, this->color);
+	return bestMove;
 }
 
+vector<Move *> Player::getMoves(Board board)
+{
+	vector<Move *> moves = vector<Move *>();
+	for(int i = 0; i < 8; i++)
+	{
+		for(int j = 0; j < 8; j++)
+		{
+			Move * m = new Move(i, j);
+			if(board.checkMove(m, this->color))
+			{
+				moves.push_back(m);
+			}
+		}
+	}
+	return moves;
+}
+
+Move *Player::getBestMove(vector<Move *> moves, Board * board)
+{
+	Move * bestMove = new Move(-1, -1);
+	Move * currentMove = bestMove;
+	int maxScore = -100;
+	int maxTaken = 0;
+	Side other = (this->color == BLACK) ? WHITE : BLACK;
+	
+	vector<Move *>::iterator i;
+	for(i = moves.begin(); i != moves.end(); i++)
+	{
+		Board * board1 = board->copy();
+		int taken = 0;
+		currentMove = *i;
+		int x = currentMove->getX(), y = currentMove->getY();
+		int score = -10;
+		if((x == 0 && y == 0) || (x == 7 && y == 0) || (x == 0 && y == 7)
+			|| (x == 7 && y == 7))
+		{
+			score = CORNER;
+		}
+		else if((x == 1 && y == 1) || (x == 1 && y == 6) || (x == 6 && 
+				y == 1) || (x == 6 && y == 6))
+		{
+			score = ADJ;
+		}
+		else if(x == 0 || x == 7 || y == 0 || y == 7)
+		{
+			score = EDGE;
+		}
+		else if(((x == 1 || x == 6) && y == 0) || ((x == 1 || x == 6) &&
+				y == 6) || ((y == 1 || y == 6) && x == 0) || ((y == 1
+				|| y == 6) && x == 6))
+		{
+			score = ADJCORNER;
+		}
+		else
+		{
+			score = 0;
+		}
+		board1->doMove(currentMove, this->color);
+		taken = board->count(other) - board1->count(other);
+		if(score > maxScore)
+		{
+			maxScore = score;
+			maxTaken = taken;
+			bestMove = currentMove;
+		}
+		else if (taken > maxTaken && score >= maxScore)
+		{
+			maxTaken = taken;
+			maxScore = score;
+			bestMove = currentMove;
+		}
+	}
+	return bestMove;
+}

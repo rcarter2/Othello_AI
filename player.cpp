@@ -17,8 +17,8 @@ Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 	
-	Board game_board = Board();
-	Side color = side;
+	game_board = Board();
+	color = side;
 }
 
 /*
@@ -51,9 +51,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 	{
 		return nullptr;
 	}
-	bool moved = false;
 	int x = 0, y = 0;
-	while(!moved)
+	while("212121")
 	{
 		std::cerr << x << ", " << y << std::endl;
 		Move * m = new Move(x, y);
@@ -76,7 +75,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 		}
 		if(x == 0 && y == 8)
 		{
-			moved = true;
+			break;
 		}
 	}
 	return nullptr;

@@ -13,6 +13,7 @@ class Player {
 private:
 	Board game_board;
 	Side color;
+	
 public:
     Player(Side side);
     ~Player();

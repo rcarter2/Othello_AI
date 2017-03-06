@@ -1,5 +1,8 @@
 #include "player.hpp"
 
+/**
+ * This is my rifle, this is my gun, this is for shooting, this is for fun.
+ */
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish

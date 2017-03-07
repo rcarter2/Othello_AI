@@ -1,13 +1,5 @@
 #include "player.hpp"
 
-/**
- * This is my rifle, this is my gun, this is for shooting, this is for fun.
- */
-
-/**
-* Hi Ross - from Grant
-*/
-
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -98,19 +90,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 Move *Player::doMinimax()
 {
 	vector<Move *> possibleMoves = getMoves(game_board);
-	int max = -10000;
-	for(int i = 0; i < possibleMoves.size(); i++)
-	{
-		Board *b = game_board.copy();
-		b->doMove(possibleMoves[i], this->color);
-		vector<Move *> possibleMoves2 = getMoves(*b);
-		Side other = (this->color == BLACK) ? WHITE : BLACK;
-		Move *enemyBest = getBestMove(possibleMoves2, b);
-		b->doMove(enemyBest, this->color);
-		
-		other = (this->color == BLACK) ? WHITE : BLACK;
-	}
-	
+	MinimaxElement * now = new MinimaxElement();
+	now->updateBoard(&game_board);
+	vector<MinimaxElement *> one_step = vector<MinimaxElement *>();
 	
 }
 
@@ -120,7 +102,7 @@ Move *Player::doMinimax()
  * @param Board board: current board instance.
  * @returns vector<Move *>: vector of all the possible moves.
  */
-vector<Move *> Player::getMoves(Board board)
+vector<Move *> Player::getMoves(Board board, Side side)
 {
 	vector<Move *> moves = vector<Move *>();
 	for(int i = 0; i < 8; i++)
@@ -128,7 +110,7 @@ vector<Move *> Player::getMoves(Board board)
 		for(int j = 0; j < 8; j++)
 		{
 			Move * m = new Move(i, j);
-			if(board.checkMove(m, this->color))
+			if(board.checkMove(m, side))
 			{
 				moves.push_back(m);
 			}
@@ -196,8 +178,6 @@ Move *Player::getBestMove(vector<Move *> moves, Board * board)
 		Board * board1 = board->copy(); // board to simulate move
 		int taken = 0;
 		currentMove = *i;
-		//int x = currentMove->getX(), y = currentMove->getY();
-		//int score = -10;
 		
 		Player::moveScore(currentMove);
 		// make the move

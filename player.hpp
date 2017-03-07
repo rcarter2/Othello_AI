@@ -12,6 +12,15 @@ int ADJCORNER = -2;
 #include <vector>
 using namespace std;
 
+/*struct MinimaxElement
+{
+	private:
+		int score;
+		Board b;
+		vector<Board*> boards;
+	public:
+}*/
+
 class Player {
 
 private:
@@ -24,6 +33,8 @@ public:
     ~Player();
 
     Move *doMove(Move *opponentsMove, int msLeft);
+    Move *doMinimax();
+    void moveScore(Move *m);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;

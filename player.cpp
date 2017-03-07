@@ -95,6 +95,25 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 	return bestMove;
 }
 
+Move *Player::doMinimax()
+{
+	vector<Move *> possibleMoves = getMoves(game_board);
+	int max = -10000;
+	for(int i = 0; i < possibleMoves.size(); i++)
+	{
+		Board *b = game_board.copy();
+		b->doMove(possibleMoves[i], this->color);
+		vector<Move *> possibleMoves2 = getMoves(*b);
+		Side other = (this->color == BLACK) ? WHITE : BLACK;
+		Move *enemyBest = getBestMove(possibleMoves2, b);
+		b->doMove(enemyBest, this->color);
+		
+		other = (this->color == BLACK) ? WHITE : BLACK;
+	}
+	
+	
+}
+
 /**
  * @brief Gets a list of all available moves for the given player.
  * 
@@ -116,6 +135,41 @@ vector<Move *> Player::getMoves(Board board)
 		}
 	}
 	return moves;
+}
+
+void Player::moveScore(Move *m)
+{
+	int x = m->getX();
+	int y = m->getY();
+	if((x == 0 && y == 0) || (x == 7 && y == 0) || (x == 0 && y == 7)
+			|| (x == 7 && y == 7))
+		{
+			// Corner spaces
+			m->setScore(CORNER);
+		}
+		else if((x == 1 && y == 1) || (x == 1 && y == 6) || (x == 6 && 
+				y == 1) || (x == 6 && y == 6))
+		{
+			//diagonal to corner spaces
+			m->setScore(ADJ);
+		}
+		else if(x == 0 || x == 7 || y == 0 || y == 7)
+		{
+			//edge spaces
+			m->setScore(EDGE);
+		}
+		else if(((x == 1 || x == 6) && y == 0) || ((x == 1 || x == 6) &&
+				y == 6) || ((y == 1 || y == 6) && x == 0) || ((y == 1
+				|| y == 6) && x == 6))
+		{
+			//edge spaces adjacent to corners
+			m->setScore(ADJCORNER);
+		}
+		else
+		{
+			//regular spaces
+			m->setScore(0);
+		}
 }
 
 /**
@@ -142,52 +196,25 @@ Move *Player::getBestMove(vector<Move *> moves, Board * board)
 		Board * board1 = board->copy(); // board to simulate move
 		int taken = 0;
 		currentMove = *i;
-		int x = currentMove->getX(), y = currentMove->getY();
-		int score = -10;
-		if((x == 0 && y == 0) || (x == 7 && y == 0) || (x == 0 && y == 7)
-			|| (x == 7 && y == 7))
-		{
-			// Corner spaces
-			score = CORNER;
-		}
-		else if((x == 1 && y == 1) || (x == 1 && y == 6) || (x == 6 && 
-				y == 1) || (x == 6 && y == 6))
-		{
-			//diagonal to corner spaces
-			score = ADJ;
-		}
-		else if(x == 0 || x == 7 || y == 0 || y == 7)
-		{
-			//edge spaces
-			score = EDGE;
-		}
-		else if(((x == 1 || x == 6) && y == 0) || ((x == 1 || x == 6) &&
-				y == 6) || ((y == 1 || y == 6) && x == 0) || ((y == 1
-				|| y == 6) && x == 6))
-		{
-			//edge spaces adjacent to corners
-			score = ADJCORNER;
-		}
-		else
-		{
-			//regular spaces
-			score = 0;
-		}
+		//int x = currentMove->getX(), y = currentMove->getY();
+		//int score = -10;
+		
+		Player::moveScore(currentMove);
 		// make the move
 		board1->doMove(currentMove, this->color);
 		taken = board->count(other) - board1->count(other);
-		if(score > maxScore)
+		if(currentMove->getScore() > maxScore)
 		{
 			// if good move, update info
-			maxScore = score;
+			maxScore = currentMove->getScore();
 			maxTaken = taken;
 			bestMove = currentMove;
 		}
-		else if (taken > maxTaken && score >= maxScore)
+		else if (taken > maxTaken && currentMove->getScore() >= maxScore)
 		{
 			// if same score but takes more, update info
 			maxTaken = taken;
-			maxScore = score;
+			maxScore = currentMove->getScore();
 			bestMove = currentMove;
 		}
 	}

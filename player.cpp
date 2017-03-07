@@ -1,5 +1,6 @@
 #include "player.hpp"
 
+using namespace std;
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -11,6 +12,11 @@ Player::Player(Side side) {
 	
 	game_board = Board();
 	color = side;
+	
+	EDGE = 1;
+	CORNER = 5;
+	ADJ = -10;
+	ADJCORNER = -5;
 }
 
 /*
@@ -48,39 +54,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 		return nullptr;
 	}
 	
-	/**
-	 * Commented out the first 5 points, since unnecessary.
-	 */
-	
-	/*int x = 0, y = 0;
-	while("212121")
-	{
-		std::cerr << x << ", " << y << std::endl;
-		Move * m = new Move(x, y);
-		if(this->game_board.checkMove(m, this->color))
-		{
-			this->game_board.doMove(m, this->color);
-			return m;
-		}
-		else
-		{
-			if(x < 7)
-			{
-				x++;
-			}
-			else
-			{
-				y++;
-				x = 0;
-			}
-		}
-		if(x == 0 && y == 8)
-		{
-			break;
-		}
-	}
-	*/
-	vector<Move *> possibleMoves = getMoves(game_board);
+	vector<Move *> possibleMoves = getMoves(game_board, this->color);
 	Move * bestMove = getBestMove(possibleMoves, &this->game_board);
 	//Makes move on internal board instance.
 	this->game_board.doMove(bestMove, this->color);
@@ -89,11 +63,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 
 Move *Player::doMinimax()
 {
-	vector<Move *> possibleMoves = getMoves(game_board);
-	MinimaxElement * now = new MinimaxElement();
-	now->updateBoard(&game_board);
+	vector<Move *> possibleMoves = getMoves(game_board, this->color);
+	//MinimaxElement * now = new MinimaxElement();
+	//now->updateBoard(&game_board);
 	vector<MinimaxElement *> one_step = vector<MinimaxElement *>();
-	
+	return nullptr;
 }
 
 /**

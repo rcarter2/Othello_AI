@@ -1,10 +1,6 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-int EDGE = 1;
-int ADJ = -10;
-int CORNER = 5;
-int ADJCORNER = -2;
 
 #include <iostream>
 #include "common.hpp"
@@ -19,6 +15,10 @@ class Player {
 private:
 	Board game_board;
 	Side color;
+	int EDGE;
+	int ADJ;
+	int CORNER;
+	int ADJCORNER;
 	vector<Move *> getMoves(Board board, Side side);
 	Move *getBestMove(vector<Move *> moves, Board * board);
 public:

@@ -14,5 +14,5 @@ of it, which Ross and I ended up editing later. I also wrote up the readme files
 
 Strategy:
 For the first part of the assignment, we implemented a simple heuristic and created a 
-minimax algorithm. We then sort of ran out of time to complete a more complicated AI.
-Our strategy is mind games.
+minimax algorithm (that didn't really work). For the second part of the assignment, we
+scrapped the original minimax algorithm and wrote a new one.  

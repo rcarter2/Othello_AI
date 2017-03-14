@@ -40,6 +40,7 @@ Player::~Player() {
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) 
 {
+	/*
 	//Creates a timer, but not needed yet.
 	time_t now;
 	time(&now);
@@ -59,15 +60,46 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
 	//Makes move on internal board instance.
 	this->game_board.doMove(bestMove, this->color);
 	return bestMove;
+	*/
+	return doMinimax();
 }
 
 Move *Player::doMinimax()
 {
-	vector<Move *> possibleMoves = getMoves(game_board, this->color);
-	//MinimaxElement * now = new MinimaxElement();
-	//now->updateBoard(&game_board);
-	vector<MinimaxElement *> one_step = vector<MinimaxElement *>();
-	return nullptr;
+	int maxMin = -1000000;
+	Move * bestMove;
+	Side other = (this->color == BLACK) ? WHITE : BLACK;
+	for(int i = 0; i < 8; i++)
+	{
+		for(int j = 0; j < 8; j++)
+		{
+			Move *m = new Move(i, j);
+			Board *clone = this->game_board.copy();
+			clone->doMove(m, this->color);
+			int min = 1000000;
+			for(int k = 0; k < 8; k++)
+			{
+				for(int l = 0; l < 8; l++)
+				{
+					Move *m2 = new Move(k, l);
+					Board *clone2 = clone->copy();
+					clone2->doMove(m2, other);
+					//vector<Move *> possibleMoves = getMoves(*clone2, this->color);
+					int score = m2->getScore();
+					if(score < min)
+					{
+						min = score;
+					}
+				}
+			}
+			if(min > maxMin)
+			{
+				maxMin = min;
+				bestMove = m;
+			}
+		}
+	}  
+	return bestMove;
 }
 
 /**
